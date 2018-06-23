@@ -40,6 +40,52 @@ int main(int argc, char **argv) {
 
     handleMyFind(&searchPath, &files, recursive, ignoreCapitalization, n);
 
+    pid_t pid = getpid();
+
+    printf("PID before fork(): %d\n", pid);
+    pid = fork();
+
+    switch(pid) {
+        case -1:
+            printf("Fehler beim Erzeugen eines Kindprozesses.\n");
+            return 1;
+            break;
+        case 0: // Kindprozess
+            sleep(1);
+            //printf("Kindprozess pid: %d\n", pid);
+            printf("Kindprozess getpid(): %d\n", getpid());
+            printf("-----------\n");
+            fflush(stdout);
+            exit (0);
+            break;
+        default: // Elternprozess
+            sleep(1);
+            //printf("Elternprozess pid: %d\n", pid);
+            printf("Elternprozess getpid(): %d\n", getpid());
+
+            pid = fork();
+
+            if (pid == 0) {
+                //printf("Kindprozess pid: %d\n", pid);
+                printf("Kindprozess getpid(): %d\n", getpid());
+                exit (0);
+            }
+            else if (pid == -1) {
+                return 1;
+            }
+            else {
+                //printf("Elternprozess pid: %d\n", pid);
+                while(wait(NULL)>0);
+                printf("Elternrozess getpid(): %d\n", getpid());
+
+                printf("WAITED\n");
+            }
+
+            printf("-----------\n");
+            fflush(stdout);
+            break;
+    }
+
     return 0;
 }
 
@@ -48,13 +94,13 @@ void handleMyFind(char *searchPath[], char *filesVar[], int recursiveFlag, int i
         char testString[] = "CapitALleTTERtest";
         *testString = convertCapitalLetters(testString);
     }
-
+    /*
     printf("Searchpath: %s\n", *searchPath);
 
     for (int i = 0; i < n; i++) {
         printf("%s\n", filesVar[i]);
     }
-
+    */
 }
 
 char* convertCapitalLetters(char toLower[]) {
@@ -63,10 +109,7 @@ char* convertCapitalLetters(char toLower[]) {
         if (asciiNum >= 65 && asciiNum <= 90) {
             toLower[i] += (97 - 65);
         }
-        printf("%c", toLower[i]);
     }
-
-    printf("\n");
 
     return toLower;
 }
