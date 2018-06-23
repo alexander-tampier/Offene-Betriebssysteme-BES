@@ -1,11 +1,9 @@
 #include <stdio.h>
+#include <dirent.h>
+#include <errno.h>
 #include <getopt.h>
 #include <stdlib.h>
 #include <string.h>
-
-void handleMyFind(char *searchPath[], char *filesVar[], int recursiveFlag, int ignoreCapitalization, int n);
-
-char* convertCapitalLetters(char toLower[]);
 
 int main(int argc, char **argv) {
     int c;
@@ -13,7 +11,7 @@ int main(int argc, char **argv) {
     int ignoreCapitalization = 0;
     char *searchPath[100];
 
-    while ((c = getopt(argc, argv, "iR")) != -1)
+    while ((c = getopt(argc, argv, "iR")) != EOF)
         switch (c) {
             case 'R':
                 recursive = 1;
@@ -38,78 +36,60 @@ int main(int argc, char **argv) {
         index++;
     }
 
-    handleMyFind(&searchPath, &files, recursive, ignoreCapitalization, n);
-
     pid_t pid = getpid();
 
     printf("PID before fork(): %d\n", pid);
     pid = fork();
 
-    switch(pid) {
-        case -1:
-            printf("Fehler beim Erzeugen eines Kindprozesses.\n");
+    if (pid == 0) {
+        /* Kindprozess
+         * wenn fork() eine 0 zurückgibt, befinden wir uns im Kindprozess
+         */
+        char myLocalSearchPath[100];
+        char myLocalFileToFind[100];
+
+        struct dirent *direntp;
+        DIR *dirp;
+
+        strcpy(myLocalSearchPath, *searchPath);
+        strcpy(myLocalFileToFind, files[0]);
+
+        if ((dirp = opendir(*searchPath)) == NULL) {
+            perror("Failed to open directory");
             return 1;
-            break;
-        case 0: // Kindprozess
-            sleep(1);
-            //printf("Kindprozess pid: %d\n", pid);
-            printf("Kindprozess getpid(): %d\n", getpid());
-            printf("-----------\n");
-            fflush(stdout);
-            exit (0);
-            break;
-        default: // Elternprozess
-            sleep(1);
-            //printf("Elternprozess pid: %d\n", pid);
-            printf("Elternprozess getpid(): %d\n", getpid());
+        }
 
-            pid = fork();
+        while ((direntp = readdir(dirp)) != NULL){
+            if(ignoreCapitalization!=0){
+                if(strcasecmp(direntp->d_name, myLocalFileToFind) == 0)
+                    printf("++Process: %d -> Found File directory: %s %s\n", getpid(), myLocalSearchPath, direntp->d_name);
+            }else if(strcmp(myLocalFileToFind, direntp->d_name) == 0){
+                printf("%s\n", direntp->d_name);
 
-            if (pid == 0) {
-                //printf("Kindprozess pid: %d\n", pid);
-                printf("Kindprozess getpid(): %d\n", getpid());
-                exit (0);
             }
-            else if (pid == -1) {
-                return 1;
-            }
-            else {
-                //printf("Elternprozess pid: %d\n", pid);
-                while(wait(NULL)>0);
-                printf("Elternrozess getpid(): %d\n", getpid());
+        }
+        while ((closedir(dirp) == -1) && (errno == EINTR));
 
-                printf("WAITED\n");
-            }
-
-            printf("-----------\n");
-            fflush(stdout);
-            break;
+        sleep(1);
+        //printf("Kindprozess pid: %d\n", pid);
+        printf("Kindprozess getpid(): %d\n", getpid());
+        printf("-----------\n");
+        fflush(stdout);
+        exit(0);
+    } else if (pid > 0) {
+        /* Elternprozess
+         * Gibt fork() einen Wert größer 0 zurück, befinden wir uns im Elternprozess
+         * in pid steht die ID des Kindprozesses
+         * getpid() gibt die eigene PID zurück
+         */
+        printf("Elternprozess getpid(): %d\n", getpid());
+        sleep(1);
+        printf("-----------\n");
+        //wait for all children - asynchron
+        while (wait(NULL) > 0) {}
+        printf("WAITED");
+        fflush(stdout);
     }
 
     return 0;
-}
-
-void handleMyFind(char *searchPath[], char *filesVar[], int recursiveFlag, int ignoreCapitalization, int n) {
-    if (ignoreCapitalization != 0) {
-        char testString[] = "CapitALleTTERtest";
-        *testString = convertCapitalLetters(testString);
-    }
-    /*
-    printf("Searchpath: %s\n", *searchPath);
-
-    for (int i = 0; i < n; i++) {
-        printf("%s\n", filesVar[i]);
-    }
-    */
-}
-
-char* convertCapitalLetters(char toLower[]) {
-    for (int i = 0; i < strlen(toLower); i++) {
-        unsigned int asciiNum = toLower[i];
-        if (asciiNum >= 65 && asciiNum <= 90) {
-            toLower[i] += (97 - 65);
-        }
-    }
-
-    return toLower;
 }
