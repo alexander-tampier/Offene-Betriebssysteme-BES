@@ -31,10 +31,22 @@
       <file leaf-file-name="main.c" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/main.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="332">
-              <caret line="154" lean-forward="true" selection-start-line="154" selection-end-line="154" />
+            <state relative-caret-position="375">
+              <caret line="25" column="49" selection-start-line="25" selection-start-column="49" selection-end-line="25" selection-end-column="49" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="myqueue.h" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/myqueue.h">
+          <provider selected="true" editor-type-id="text-editor">
+            <state>
+              <caret column="2" lean-forward="true" selection-start-column="2" selection-end-column="2" />
+              <folding>
+                <element signature="e#110#128#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -47,6 +59,7 @@
       <find>myGrid</find>
       <find>fifoPath</find>
       <find>signal</find>
+      <find>printf</find>
     </findStrings>
     <replaceStrings>
       <replace>finalGrid</replace>
@@ -55,6 +68,7 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
+        <option value="$PROJECT_DIR$/myqueue.h" />
         <option value="$PROJECT_DIR$/main.c" />
       </list>
     </option>
@@ -133,24 +147,27 @@
       <workItem from="1530462768991" duration="988000" />
       <workItem from="1530464654732" duration="708000" />
       <workItem from="1530466342934" duration="4113000" />
+      <workItem from="1530629230977" duration="1274000" />
+      <workItem from="1530631363394" duration="109000" />
+      <workItem from="1530631554380" duration="552000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="13681000" />
+    <option name="totallyTimeSpent" value="15616000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="10" y="33" width="1420" height="809" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.4929006" visible="true" weight="0.25" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.48681542" visible="true" weight="0.25" />
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info active="true" anchor="bottom" id="Messages" order="7" visible="true" weight="0.3292517" />
       <window_info anchor="bottom" id="CMake" order="7" />
       <window_info anchor="bottom" id="Event Log" order="7" side_tool="true" />
       <window_info anchor="bottom" id="Run" order="2" weight="0.22040816" />
       <window_info anchor="bottom" id="Version Control" order="7" show_stripe_button="false" />
-      <window_info id="Structure" order="1" sideWeight="0.5070994" side_tool="true" visible="true" weight="0.25" />
+      <window_info id="Structure" order="1" sideWeight="0.5131846" side_tool="true" visible="true" weight="0.25" />
       <window_info anchor="bottom" id="Terminal" order="7" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info id="Favorites" order="2" side_tool="true" />
@@ -175,6 +192,55 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/main.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1515">
+          <caret line="101" column="43" selection-start-line="101" selection-start-column="43" selection-end-line="101" selection-end-column="43" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/myqueue.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="225">
+          <caret line="15" column="17" selection-start-line="14" selection-end-line="15" selection-end-column="17" />
+          <folding>
+            <element signature="e#110#128#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/main.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2685">
+          <caret line="179" column="60" lean-forward="true" selection-start-line="179" selection-start-column="60" selection-end-line="179" selection-end-column="60" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/main.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2310">
+          <caret line="154" lean-forward="true" selection-start-line="154" selection-end-line="154" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
@@ -217,10 +283,20 @@
     <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
+    <entry file="file://$PROJECT_DIR$/myqueue.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret column="2" lean-forward="true" selection-start-column="2" selection-end-column="2" />
+          <folding>
+            <element signature="e#110#128#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/main.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="332">
-          <caret line="154" lean-forward="true" selection-start-line="154" selection-end-line="154" />
+        <state relative-caret-position="375">
+          <caret line="25" column="49" selection-start-line="25" selection-start-column="49" selection-end-line="25" selection-end-column="49" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
           </folding>

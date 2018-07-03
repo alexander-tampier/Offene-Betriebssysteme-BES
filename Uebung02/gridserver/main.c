@@ -7,13 +7,27 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <string.h>
+#include "myqueue.h"
+
+//pipe creation fifo filedirectory for communications with other process
+char *myfifo = "/tmp/myfifo";
+
+//global for sigkill (message Queue) hanlder
+int msgid = -1;    /* Message Queue ID */
 
 //signal handler
 void myhandler(int sig) {
     printf("CTRL+C (Sig Nr:%d)ignored...\n", sig);
     fflush(stdout);
     // TODO - send SigKILL to all vehicles
-    // TODO - send sigKILL to display
+
+    //kill message Queue
+    if(msgctl(msgid, IPC_RMID, NULL)==-1){
+        printf("could not kill message Queue!?");
+    };
+
+    //kill FIFO (named pipe) to display
+    remove(myfifo);
 
     exit(0);
 }
@@ -88,8 +102,17 @@ int main(int argc, char *argv[]) {
     int optiony = 0;
     program_name = argv[0];
 
-    //pipe creation fifo filedirectory for communications with other process
-    char *myfifo = "/tmp/myfifo";
+    //message Queue initialization
+    message_t msg;    /* Buffer fuer Message */
+
+
+    /* Message Queue neu anlegen */
+    if ((msgid = msgget(KEY, PERM | IPC_CREAT | IPC_EXCL)) == -1) {
+        /* error handling */
+        fprintf(stderr, "%s: Error creating message queue\n", argv[0]);
+        return EXIT_FAILURE;
+    }
+
 
 
     //Signal handler call!
@@ -132,9 +155,6 @@ int main(int argc, char *argv[]) {
     grid *myGrid = initializeGrid(width + 1, height + 1);
     //printGrid(myGrid);
 
-    printf("%d  %d\n", width, height);
-    printf("%d \n", optind);
-
     FILE *fp;
 
     if (mkfifo(myfifo, 0666) == -1) {
@@ -143,9 +163,18 @@ int main(int argc, char *argv[]) {
     }
 
 
-
     while (1) {
-        //writing to display through named pipe
+        /*
+         * Read messages from gridclient
+         */
+        if (msgrcv(msgid, &msg, sizeof(msg) - sizeof(long), 0, 0) == -1) {
+            /* error handling */
+            fprintf(stderr, "%s: Can't receive from message queue\n", argv[0]);
+            return EXIT_FAILURE;
+        }
+        printf("Our first awesome Client: %ld\n", msg.mType);
+
+        //writing to display through named pipe to griddisplay program
         if ((fp = fopen(myfifo, "w")) != NULL) {
             for (int j = 0; j < myGrid->height; j++) {
                 fprintf(fp, "%s\n", myGrid->grid[j]);
@@ -153,10 +182,6 @@ int main(int argc, char *argv[]) {
         }
         fclose(fp);
 
-        remove(myfifo);
         sleep(2);
     }
-
-
-    return EXIT_SUCCESS;
 }

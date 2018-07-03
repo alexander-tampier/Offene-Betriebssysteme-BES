@@ -3,4 +3,4 @@ project(gridserver C)
 
 set(CMAKE_C_STANDARD 99)
 
-add_executable(gridserver main.c)
+add_executable(gridserver main.c myqueue.h)
