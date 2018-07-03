@@ -1,5 +1,3 @@
-Uebung01/.idea/workspace.xml
-
 # Created by https://www.gitignore.io/api/clion
 
 ### CLion ###
@@ -19,6 +17,7 @@ Uebung01/.idea/workspace.xml
 .idea/**/sqlDataSources.xml
 .idea/**/dynamic.xml
 .idea/**/uiDesigner.xml
+.idea/**/workspace.xml
 
 # Gradle:
 .idea/**/gradle.xml
