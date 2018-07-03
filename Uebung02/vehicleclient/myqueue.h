@@ -14,7 +14,7 @@
 #include <sys/msg.h>
 
 #define KEY 420257991		/* eindeutiger Key z.B. Matrikelnummer */
-#define PERM 0666
+#define PERM 0660
 
 typedef struct
 {
