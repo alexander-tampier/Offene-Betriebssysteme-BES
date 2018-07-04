@@ -147,7 +147,6 @@ int main(int argc, char *argv[]) {
     int stopNestedFor = 0;
     program_name = argv[0];
 
-
     //message Queue initialization
     message_t msg;    /* Buffer fuer Message */
 
@@ -159,8 +158,6 @@ int main(int argc, char *argv[]) {
         fprintf(stderr, "%s: Error creating message queue\n", argv[0]);
         return EXIT_FAILURE;
     }
-
-
 
     //Signal handler call!
     (void) signal(SIGINT, myhandler);
@@ -219,7 +216,9 @@ int main(int argc, char *argv[]) {
             /* error handling */
             fprintf(stderr, "%s: Can't receive from message queue\n", argv[0]);
             return EXIT_FAILURE;
-        } else {
+        }
+        //Register vehicleClient
+        else {
             // CardinalPoint is empty -> therefore register the current vehicle from client
             if (msg.mCardinalPoints == '\0') {
                 // check if driver has already been created
@@ -239,19 +238,25 @@ int main(int argc, char *argv[]) {
                     //look for empty position on the grid
                     for (int i = 0; i < myGrid->width; i++) {
                         for (int j = 0; j < myGrid->height; j++) {
-                            if (myGrid->grid[i][j] == '.') {
-                                localDriver.x = i;
-                                localDriver.y = j;
-                                myGrid->grid[i][j] = localDriver.name;
+                            int x = (rand() % (myGrid->width-1)) +1;
+                            int y = (rand() % (myGrid->height-1)) +1;
+                            if (myGrid->grid[x][y] == '.') {
+                                localDriver.x = x;
+                                localDriver.y = y;
+                                myGrid->grid[x][y] = localDriver.name;
                                 stopNestedFor = 1;
                                 break;
                             }
                         }
                         if (stopNestedFor) {
-                            stopNestedFor = 0;
                             break;
                         }
                     }
+                    if(!stopNestedFor)
+                        kill(msg.mPid,SIGKILL);
+
+                    stopNestedFor = 0;
+
 
                     drivers[msg.mType - 1] = localDriver;
                     printToDisplay(myGrid, fp);
@@ -264,52 +269,132 @@ int main(int argc, char *argv[]) {
                 driver driver;
 
                 switch (msg.mCardinalPoints) {
-                    case 'N':
+                    case 'W':
+                        // Westen
+                        oldPositionX = drivers[(msg.mType - 1)].x;
+                        newPositionX = oldPositionX;
+                        oldPositionY = drivers[(msg.mType - 1)].y;
+                        newPositionY = drivers[(msg.mType - 1)].y -= 1;
 
-                        break;
-                    case 'E':
+                        //# or driver
+                        if (myGrid->grid[newPositionX][newPositionY] != '.') {
+                            kill(msg.mPid, SIGKILL);
+                            drivers[(msg.mType - 1)].name = '\0';
+                            myGrid->grid[oldPositionX][oldPositionY] = '.';
+
+                            //only when driver
+                            if (myGrid->grid[newPositionX][newPositionY] != '#') {
+                                driver = drivers[(myGrid->grid[newPositionX][newPositionY] - 65)];
+                                drivers[(myGrid->grid[newPositionX][newPositionY] - 65)].name='\0';
+                                kill(driver.processId, SIGKILL);
+                                myGrid->grid[newPositionX][newPositionY] = '.';
+                            }
+                        } else {
+                            myGrid->grid[newPositionX][newPositionY] = (char) (msg.mType + 64);
+                            myGrid->grid[oldPositionX][oldPositionY] = '.';
+                            //printf("x: %d | y: %d - New Position in grid %c", newPositionX, newPositionY, myGrid->grid[newPositionX][newPositionY]);
+                            drivers[(msg.mType - 1)].x=newPositionX;
+                            drivers[(msg.mType - 1)].y=newPositionY;
+                        }
                         break;
                     case 'S':
+                        // Süden
+                        oldPositionX = drivers[msg.mType - 1].x;
+                        newPositionX = drivers[msg.mType - 1].x += 1;
+                        oldPositionY = drivers[(msg.mType - 1)].y;
+                        newPositionY = oldPositionY;
+
+                        //# or driver
+                        if (myGrid->grid[newPositionX][newPositionY] != '.') {
+                            kill(msg.mPid, SIGKILL);
+                            drivers[(msg.mType - 1)].name = '\0';
+                            myGrid->grid[oldPositionX][oldPositionY] = '.';
+
+                            //only when driver
+                            if (myGrid->grid[newPositionX][newPositionY] != '#') {
+                                driver = drivers[(myGrid->grid[newPositionX][newPositionY] - 65)];
+                                drivers[(myGrid->grid[newPositionX][newPositionY] - 65)].name='\0';
+                                kill(driver.processId, SIGKILL);
+                                myGrid->grid[newPositionX][newPositionY] = '.';
+                            }
+                        } else {
+                            myGrid->grid[newPositionX][newPositionY] = (char) (msg.mType + 64);
+                            myGrid->grid[oldPositionX][oldPositionY] = '.';
+                            //printf("x: %d | y: %d - New Position in grid %c", newPositionX, newPositionY, myGrid->grid[newPositionX][newPositionY]);
+                            drivers[(msg.mType - 1)].x=newPositionX;
+                            drivers[(msg.mType - 1)].y=newPositionY;
+                        }
+                        break;
+                    case 'E':
+                        // Osten
                         oldPositionX = drivers[msg.mType - 1].x;
                         newPositionX = oldPositionX;
                         oldPositionY = drivers[(msg.mType - 1)].y;
                         newPositionY = drivers[(msg.mType - 1)].y += 1;
 
                         //# or driver
-                        if (myGrid->grid[oldPositionX][newPositionY] != '.') {
+                        if (myGrid->grid[newPositionX][newPositionY] != '.') {
                             kill(msg.mPid, SIGKILL);
-                            drivers[msg.mType - 1].name = '\0';
+                            drivers[(msg.mType - 1)].name = '\0';
                             myGrid->grid[oldPositionX][oldPositionY] = '.';
 
                             //only when driver
                             if (myGrid->grid[newPositionX][newPositionY] != '#') {
-                                driver = drivers[myGrid->grid[oldPositionX][oldPositionY] - 65];
+                                driver = drivers[(myGrid->grid[newPositionX][newPositionY] - 65)];
+                                drivers[(myGrid->grid[newPositionX][newPositionY] - 65)].name='\0';
                                 kill(driver.processId, SIGKILL);
-                                driver.name = '\0';
-                                myGrid->grid[oldPositionX][oldPositionY] = '.';
+                                myGrid->grid[newPositionX][newPositionY] = '.';
                             }
                         } else {
                             myGrid->grid[newPositionX][newPositionY] = (char) (msg.mType + 64);
                             myGrid->grid[oldPositionX][oldPositionY] = '.';
-                            printf("x: %d | y: %d - New Position in grid %c", newPositionX, newPositionY,
-                                   myGrid->grid[newPositionX][newPositionY]);
+                            //printf("x: %d | y: %d - New Position in grid %c\n", newPositionX, newPositionY, myGrid->grid[newPositionX][newPositionY]);
+                            drivers[(msg.mType - 1)].x=newPositionX;
+                            drivers[(msg.mType - 1)].y=newPositionY;
                         }
-
-
                         break;
-                    case 'W':
+                    case 'N':
+                        // Norden
+                        oldPositionX = drivers[msg.mType - 1].x;
+                        newPositionX = drivers[msg.mType - 1].x -= 1;
+                        oldPositionY = drivers[(msg.mType - 1)].y;
+                        newPositionY = oldPositionY;
+
+                        //# or driver
+                        if (myGrid->grid[newPositionX][newPositionY] != '.') {
+                            kill(msg.mPid, SIGKILL);
+                            drivers[(msg.mType - 1)].name = '\0';
+                            myGrid->grid[oldPositionX][oldPositionY] = '.';
+
+                            //only when driver
+                            if (myGrid->grid[newPositionX][newPositionY] != '#') {
+                                driver = drivers[(myGrid->grid[newPositionX][newPositionY] - 65)];
+                                drivers[(myGrid->grid[newPositionX][newPositionY] - 65)].name='\0';
+                                kill(driver.processId, SIGKILL);
+                                myGrid->grid[newPositionX][newPositionY] = '.';
+                            }
+                        } else {
+                            myGrid->grid[newPositionX][newPositionY] = (char) (msg.mType + 64);
+                            myGrid->grid[oldPositionX][oldPositionY] = '.';
+                            //printf("x: %d | y: %d - New Position in grid %c", newPositionX, newPositionY, myGrid->grid[newPositionX][newPositionY]);
+                            drivers[(msg.mType - 1)].x=newPositionX;
+                            drivers[(msg.mType - 1)].y=newPositionY;
+                        }
                         break;
                     case 'T':
+                        kill(msg.mPid, SIGKILL);
+                        drivers[(msg.mType - 1)].name = '\0';
+                        myGrid->grid[drivers[(msg.mType - 1)].x][drivers[(msg.mType - 1)].y] = '.';
                         break;
                 }
                 printToDisplay(myGrid, fp);
             }
 
-            printf("Our first awesome Client: %c\n", (char) (msg.mType + 64));
+            //printf("Our first awesome Client: %c\n", (char) (msg.mType + 64));
 
 
             //CHANNEL RECEIVED AND SEND ACK FLAG
-            if (msg.mType != -1) {
+            if (msg.mType != -1 && drivers[(msg.mType-1)].name!='\0') {
                 msg.mType += 26;
                 msg.mCardinalPoints = 'K';
                 if (msgsnd(msgid, &msg, sizeof(msg) - sizeof(long), 0) == -1) {

@@ -26,6 +26,7 @@ while(1){
       {
          printf("%s",puffer);
       }
+      printf("\n");
    }
     fclose (fp); 
 }

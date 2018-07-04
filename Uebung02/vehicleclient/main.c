@@ -56,48 +56,35 @@ int main(int argc, char *argv[]) {
         while (1) {
             do {
                 printf("Please input a cardinal point: ");
-                scanf("%c", &input);
-
-                switch (input) {
-                    case 'N':
-                        inputValid = 1;
-                        break;
-                    case 'E':
-                        inputValid = 1;
-                        break;
-                    case 'S':
-                        inputValid = 1;
-                        break;
-                    case 'W':
-                        inputValid = 1;
-                        break;
-                    case 'T':
-                        inputValid = 1;
-                        break;
-                    default:
-                        printf("Usage [N,E,S,W] to move || [T] to terminate\n");
-                        break;
+                //scanf("%c", &input);
+                input = getchar();
+                int t;
+                while ( (t=getchar())!='\n' && t!=EOF );
+                if (input == 'N' || input == 'E' || input == 'S' || input == 'W' || input == 'T') {
+                    inputValid = 1;
+                } else {
+                    printf("Usage [N,E,S,W] to move || [T] to terminate\n");
                 }
             } while (inputValid != 1);
-            fflush(stdin);
-            inputValid=0;
 
-            // Message Queue oeffnen
+                inputValid = 0;
+
+                // Message Queue oeffnen
 
 
-            // Nachricht verschicken
-            msg.mType = *argv[1]-64;
-            msg.mCardinalPoints = input;
-            if (msgsnd(msgid, &msg, sizeof(msg) - sizeof(long), 0) == -1) {
-                // error handling
-                fprintf(stderr, "Can't send message\n");
-                return EXIT_FAILURE;
+                // Nachricht verschicken
+                msg.mType = *argv[1] - 64;
+                msg.mCardinalPoints = input;
+                if (msgsnd(msgid, &msg, sizeof(msg) - sizeof(long), 0) == -1) {
+                    // error handling
+                    fprintf(stderr, "Can't send message\n");
+                    return EXIT_FAILURE;
+                }
+                printf("Message sent: %c\n", msg.mCardinalPoints);
+                input = '\0';
             }
-            printf("Message sent: %c\n", msg.mCardinalPoints);
-            input='\0';
+
+            return EXIT_SUCCESS;
         }
 
-        return EXIT_SUCCESS;
     }
-
-}
